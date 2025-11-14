@@ -17,10 +17,34 @@ export const ResponseDetails = ({ result, onPlay }: ResponseDetailsProps) => {
   const isError = result.status >= 400 || result.status === 0;
   const isWarning = result.status >= 300 && result.status < 400;
 
-  const isPlayable = result.url.toLowerCase().includes('.m3u8') || 
-                     result.url.toLowerCase().includes('.mp4') ||
-                     result.url.toLowerCase().includes('.mp3') ||
-                     result.url.toLowerCase().includes('.m3u');
+  // Extended format support for playback
+  const isPlayable = () => {
+    const urlLower = result.url.toLowerCase();
+    
+    // HLS/DASH streams
+    if (urlLower.includes('.m3u8') || urlLower.includes('.m3u') || urlLower.includes('.mpd')) {
+      return true;
+    }
+    
+    // Video formats
+    const videoFormats = ['.mp4', '.webm', '.ogv', '.mov', '.flv', '.avi', '.mkv', '.ts', '.mts', '.m2ts'];
+    if (videoFormats.some(fmt => urlLower.includes(fmt))) {
+      return true;
+    }
+    
+    // Audio formats
+    const audioFormats = ['.mp3', '.aac', '.wav', '.ogg', '.flac', '.wma', '.opus'];
+    if (audioFormats.some(fmt => urlLower.includes(fmt))) {
+      return true;
+    }
+    
+    // Generic streaming URLs without extensions (like Twitch, etc)
+    if (urlLower.includes('stream') || urlLower.includes('live') || urlLower.includes('channel')) {
+      return isSuccess; // Only if successful
+    }
+    
+    return false;
+  };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(result.url);
@@ -66,7 +90,7 @@ export const ResponseDetails = ({ result, onPlay }: ResponseDetailsProps) => {
 
           {/* Action Buttons and Status */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {isPlayable && isSuccess && onPlay && (
+            {isPlayable() && isSuccess && onPlay && (
               <Button
                 variant="ghost"
                 size="sm"

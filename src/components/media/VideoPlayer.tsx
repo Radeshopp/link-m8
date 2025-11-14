@@ -30,6 +30,7 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
       const isDASH = SUPPORTED_FORMATS.dash.some(ext => urlLower.includes(ext));
       const isVideo = SUPPORTED_FORMATS.video.some(ext => urlLower.includes(ext));
       const isAudio = SUPPORTED_FORMATS.audio.some(ext => urlLower.includes(ext));
+      const isUnknownFormat = !isHLS && !isDASH && !isVideo && !isAudio;
 
       const handleError = (errorMsg: string) => {
         onError?.(errorMsg);
@@ -85,7 +86,33 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
         const ext = SUPPORTED_FORMATS.audio.find(ext => urlLower.includes(ext)) || '.mp3';
         video.current.type = `audio/${ext.substring(1)}`;
       }
-      // Generic Fallback
+      // HLS Fallback (without extension or generic stream URL)
+      else if (isUnknownFormat && Hls.isSupported()) {
+        const hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 90,
+        });
+
+        hls.loadSource(url);
+        hls.attachMedia(video.current);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.current.play().catch(() => {
+            console.warn('Autoplay prevented by browser');
+          });
+        });
+
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            // Try native playback as fallback
+            video.current.src = url;
+          }
+        });
+
+        return () => hls.destroy();
+      }
+      // Generic Fallback - try native browser playback
       else {
         video.current.src = url;
       }
