@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Cast, PictureInPicture } from 'lucide-react';
+import { X, Cast, PictureInPicture, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -23,7 +23,7 @@ export const MediaControls = ({
   isCasting,
 }: MediaControlsProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5 bg-gradient-to-r from-primary/10 to-transparent px-3 py-2 rounded-lg backdrop-blur-sm border border-primary/20">
       {isPiPSupported && (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -31,9 +31,9 @@ export const MediaControls = ({
               variant="ghost"
               size="sm"
               onClick={onPiP}
-              className="hover:bg-primary/5 transition-colors"
+              className="hover:bg-primary/20 hover:text-primary transition-all duration-200 text-white/70"
             >
-              <PictureInPicture className="h-4 w-4" />
+              <Maximize2 className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -47,23 +47,24 @@ export const MediaControls = ({
             variant="ghost"
             size="sm"
             onClick={onCast}
-            className="hover:bg-primary/5 transition-colors"
+            className={`transition-all duration-200 ${isCasting ? 'bg-primary/30 text-primary' : 'hover:bg-primary/20 hover:text-primary text-white/70'}`}
             disabled={isCasting}
           >
-            <Cast className={`h-4 w-4 ${isCasting ? 'text-primary animate-pulse' : ''}`} />
+            <Cast className={`h-4 w-4 ${isCasting ? 'animate-pulse' : ''}`} />
           </Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>{isCasting ? "Casting..." : "Cast to device"}</p>
         </TooltipContent>
       </Tooltip>
+      <div className="h-6 w-px bg-white/10" />
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="hover:bg-destructive/10 transition-colors"
+            className="hover:bg-destructive/20 hover:text-destructive transition-all duration-200 text-white/70"
           >
             <X className="h-4 w-4" />
           </Button>

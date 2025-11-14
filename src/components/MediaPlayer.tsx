@@ -5,6 +5,7 @@ import { MediaControls } from './media/MediaControls';
 import { VideoPlayer } from './media/VideoPlayer';
 import { useScreenOrientation } from './media/useScreenOrientation';
 import { Badge } from './ui/badge';
+import { Volume2 } from 'lucide-react';
 
 interface MediaPlayerProps {
   url: string;
@@ -16,11 +17,28 @@ export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
   const { toast } = useToast();
   const [isPiPSupported, setIsPiPSupported] = useState(false);
   const [isCasting, setIsCasting] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useScreenOrientation(videoRef.current);
 
   React.useEffect(() => {
     setIsPiPSupported(document.pictureInPictureEnabled || false);
+  }, []);
+
+  React.useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+
+    return () => {
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+    };
   }, []);
 
   const togglePiP = async () => {
@@ -85,25 +103,49 @@ export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
   };
 
   return (
-    <Card className="w-full mx-auto overflow-hidden shadow-lg border border-primary/10 bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/50 animate-fade-in">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <Badge variant="outline" className="text-primary border-primary/20">
-              Now Playing
-            </Badge>
+    <div className="w-full mx-auto animate-fade-in">
+      <Card className="w-full overflow-hidden shadow-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-900/80 backdrop-blur-xl hover:border-primary/20 transition-all duration-500">
+        <CardContent className="p-6 space-y-4">
+          {/* Header Section */}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className={`h-3 w-3 rounded-full ${isPlaying ? 'bg-red-500 animate-pulse' : 'bg-primary'}`} />
+                <div className={`absolute inset-0 h-3 w-3 rounded-full ${isPlaying ? 'bg-red-500' : 'bg-primary'} animate-ping opacity-75`} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Volume2 className="h-4 w-4 text-primary" />
+                <Badge 
+                  variant="outline" 
+                  className="bg-gradient-to-r from-primary/20 to-blue-500/20 text-primary border-primary/40 font-medium"
+                >
+                  {isPlaying ? '🔴 Live' : 'Ready to Play'}
+                </Badge>
+              </div>
+            </div>
+            <MediaControls
+              onClose={onClose}
+              onPiP={togglePiP}
+              onCast={castToDevice}
+              isPiPSupported={isPiPSupported}
+              isCasting={isCasting}
+            />
           </div>
-          <MediaControls
-            onClose={onClose}
-            onPiP={togglePiP}
-            onCast={castToDevice}
-            isPiPSupported={isPiPSupported}
-            isCasting={isCasting}
-          />
-        </div>
-        <VideoPlayer ref={videoRef} url={url} />
-      </CardContent>
-    </Card>
+
+          {/* Video Player */}
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+            <VideoPlayer ref={videoRef} url={url} />
+          </div>
+
+          {/* Footer Info */}
+          <div className="flex items-center justify-between text-xs text-muted-foreground px-2">
+            <span>Adaptive Streaming</span>
+            {isCasting && (
+              <span className="text-primary font-medium animate-pulse">Casting Active</span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };

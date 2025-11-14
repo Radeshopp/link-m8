@@ -73,7 +73,7 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
   }, [url, ref, onError, toast]);
 
   return (
-    <div className="relative rounded-xl overflow-hidden bg-black aspect-video shadow-lg transition-transform hover:scale-[1.01]">
+    <div className="relative rounded-2xl overflow-hidden bg-black aspect-video shadow-2xl transition-all duration-300 hover:shadow-primary/20 hover:shadow-2xl group">
       <video
         ref={ref}
         className="w-full h-full"
@@ -83,6 +83,7 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
       >
         Your browser does not support video playback.
       </video>
+      <div className="absolute inset-0 rounded-2xl pointer-events-none ring-1 ring-white/10 group-hover:ring-primary/30 transition-all" />
     </div>
   );
 });
