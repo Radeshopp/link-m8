@@ -1,12 +1,8 @@
 [install]
-cmds = ["npm ci --include=dev"]
+cmds = ["npm ci"]
 
 [build]
-cmds = ["npm run build", "npm ci --omit=dev"]
+cmds = ["npm run build"]
 
 [start]
 cmd = "npm start"
-
-[env]
-HOST = "0.0.0.0"
-PORT = "8080"
