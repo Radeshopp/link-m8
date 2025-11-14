@@ -5,19 +5,29 @@ import { MediaControls } from './media/MediaControls';
 import { VideoPlayer } from './media/VideoPlayer';
 import { useScreenOrientation } from './media/useScreenOrientation';
 import { Badge } from './ui/badge';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Loader, Info } from 'lucide-react';
 
 interface MediaPlayerProps {
   url: string;
+  channelName?: string;
+  channelLogo?: string;
+  channelGroup?: string;
   onClose: () => void;
 }
 
-export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
+export const MediaPlayer = ({ 
+  url, 
+  channelName = 'Stream', 
+  channelLogo,
+  channelGroup,
+  onClose 
+}: MediaPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
   const [isPiPSupported, setIsPiPSupported] = useState(false);
   const [isCasting, setIsCasting] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useScreenOrientation(videoRef.current);
 
@@ -31,13 +41,19 @@ export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
 
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
+    const handleLoadStart = () => setIsLoading(true);
+    const handleCanPlay = () => setIsLoading(false);
 
     video.addEventListener('play', handlePlay);
     video.addEventListener('pause', handlePause);
+    video.addEventListener('loadstart', handleLoadStart);
+    video.addEventListener('canplay', handleCanPlay);
 
     return () => {
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
+      video.removeEventListener('loadstart', handleLoadStart);
+      video.removeEventListener('canplay', handleCanPlay);
     };
   }, []);
 
@@ -53,7 +69,7 @@ export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
     } catch (error) {
       toast({
         title: "PiP Error",
-        description: "Failed to enter picture-in-picture mode",
+        description: "Picture-in-Picture mode is not supported",
         variant: "destructive",
       });
     }
@@ -88,7 +104,7 @@ export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
       } else {
         toast({
           title: "Not Supported",
-          description: "Casting is not supported in this browser",
+          description: "Casting is not available in your browser",
           variant: "destructive",
         });
       }
@@ -104,25 +120,60 @@ export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
 
   return (
     <div className="w-full mx-auto animate-fade-in">
-      <Card className="w-full overflow-hidden shadow-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-900/80 backdrop-blur-xl hover:border-primary/20 transition-all duration-500">
-        <CardContent className="p-6 space-y-4">
-          {/* Header Section */}
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className={`h-3 w-3 rounded-full ${isPlaying ? 'bg-red-500 animate-pulse' : 'bg-primary'}`} />
-                <div className={`absolute inset-0 h-3 w-3 rounded-full ${isPlaying ? 'bg-red-500' : 'bg-primary'} animate-ping opacity-75`} />
-              </div>
-              <div className="flex items-center gap-2">
-                <Volume2 className="h-4 w-4 text-primary" />
-                <Badge 
-                  variant="outline" 
-                  className="bg-gradient-to-r from-primary/20 to-blue-500/20 text-primary border-primary/40 font-medium"
-                >
-                  {isPlaying ? '🔴 Live' : 'Ready to Play'}
-                </Badge>
+      <Card className="w-full overflow-hidden shadow-2xl border border-blue-500/20 bg-gradient-to-br from-slate-900/90 via-blue-900/40 to-slate-900/90 backdrop-blur-xl hover:border-blue-500/40 transition-all duration-500">
+        <CardContent className="p-6 space-y-6">
+          {/* Header with Channel Info */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex items-start gap-4">
+              {/* Channel Logo */}
+              {channelLogo && (
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden shadow-lg border border-blue-500/20 flex-shrink-0">
+                  <img 
+                    src={channelLogo} 
+                    alt={channelName}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+              
+              {/* Channel Details */}
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl font-bold text-white truncate">{channelName}</h2>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all ${
+                    isPlaying 
+                      ? 'bg-red-500/20 text-red-300' 
+                      : 'bg-blue-500/20 text-blue-300'
+                  }`}>
+                    <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-red-500' : 'bg-blue-500'} ${isPlaying ? 'animate-pulse' : ''}`} />
+                    <span className="text-xs font-semibold">
+                      {isPlaying ? '🔴 Live' : 'Ready'}
+                    </span>
+                  </div>
+                  
+                  {channelGroup && (
+                    <Badge 
+                      variant="outline" 
+                      className="bg-slate-800/50 text-slate-300 border-slate-700/50 text-xs"
+                    >
+                      {channelGroup}
+                    </Badge>
+                  )}
+
+                  {isLoading && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/20 text-yellow-300">
+                      <Loader size={14} className="animate-spin" />
+                      <span className="text-xs font-semibold">Loading</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+
+            {/* Control Buttons */}
             <MediaControls
               onClose={onClose}
               onPiP={togglePiP}
@@ -133,15 +184,18 @@ export const MediaPlayer = ({ url, onClose }: MediaPlayerProps) => {
           </div>
 
           {/* Video Player */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative rounded-xl overflow-hidden shadow-2xl ring-1 ring-blue-500/10">
             <VideoPlayer ref={videoRef} url={url} />
           </div>
 
-          {/* Footer Info */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground px-2">
-            <span>Adaptive Streaming</span>
+          {/* Stream Info Footer */}
+          <div className="flex items-center justify-between text-xs text-slate-400 px-3 py-3 rounded-lg bg-slate-800/30 border border-slate-700/30">
+            <div className="flex items-center gap-2">
+              <Info size={14} className="text-blue-400" />
+              <span>Advanced Adaptive Streaming</span>
+            </div>
             {isCasting && (
-              <span className="text-primary font-medium animate-pulse">Casting Active</span>
+              <span className="text-blue-300 font-medium animate-pulse">Casting Active</span>
             )}
           </div>
         </CardContent>

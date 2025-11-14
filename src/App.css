@@ -1,4 +1,4 @@
-/* Blob Animation */
+/* ===== BLOB ANIMATIONS ===== */
 @keyframes blob {
   0%, 100% {
     transform: translate(0, 0) scale(1);
@@ -23,7 +23,7 @@
   animation-delay: 4s;
 }
 
-/* Fade In Animation */
+/* ===== FADE ANIMATIONS ===== */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -44,6 +44,17 @@
   }
 }
 
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 0.8s ease-out;
 }
@@ -52,48 +63,76 @@
   animation: fade-in-up 0.8s ease-out;
 }
 
-/* Glass Morphism Effect */
+.animate-slide-in-right {
+  animation: slide-in-right 0.8s ease-out;
+}
+
+/* ===== GLASS MORPHISM EFFECT ===== */
 .glass {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Smooth Transitions */
+/* ===== GRADIENT ANIMATIONS ===== */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient-shift 8s ease infinite;
+  background-size: 200% 200%;
+}
+
+/* ===== GLOW EFFECTS ===== */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  }
+}
+
+.glow-effect {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ===== SMOOTH TRANSITIONS ===== */
 * {
   @apply transition-colors duration-200;
 }
 
-/* Scrollbar Styling */
+/* ===== SCROLLBAR STYLING ===== */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 51, 234, 0.5);
-  border-radius: 4px;
+  background: linear-gradient(to bottom, rgba(59, 130, 246, 0.6), rgba(34, 197, 94, 0.6));
+  border-radius: 10px;
+  border: 2px solid rgba(15, 23, 42, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.8);
+  background: linear-gradient(to bottom, rgba(59, 130, 246, 0.9), rgba(34, 197, 94, 0.9));
 }
 
-/* Link Checker Card Styles */
-.link-card {
-  @apply relative overflow-hidden rounded-lg bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 p-4 hover:from-slate-800/70 hover:to-slate-900/70 transition-all duration-300 cursor-pointer;
-}
-
-.link-card::before {
-  content: '';
-  @apply absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/0 to-purple-500/0 opacity-0 group-hover:opacity-20 transition-opacity duration-300;
-}
-
-/* Status Badge Animation */
+/* ===== STATUS BADGE ANIMATION ===== */
 @keyframes pulse-glow {
   0%, 100% {
     box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
@@ -105,9 +144,85 @@
 
 .status-success {
   @apply animate-pulse;
+  animation: pulse-glow 2s infinite;
 }
 
-.status-success::after {
-  content: '';
-  @apply absolute inset-0 rounded-full opacity-75 animate-pulse;
+/* ===== CARD HOVER EFFECTS ===== */
+.card-hover {
+  @apply transition-all duration-300 hover:scale-105 hover:shadow-lg;
 }
+
+/* ===== LINK CARD STYLES ===== */
+.link-card {
+  @apply relative overflow-hidden rounded-lg bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 p-4 hover:from-slate-800/70 hover:to-slate-900/70 transition-all duration-300;
+}
+
+.link-card::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+}
+
+/* ===== BUTTON EFFECTS ===== */
+.btn-glow {
+  @apply relative overflow-hidden;
+}
+
+.btn-glow::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 hover:opacity-20 transition-opacity duration-300;
+}
+
+/* ===== INPUT FOCUS EFFECTS ===== */
+input:focus,
+textarea:focus {
+  @apply ring-2 ring-blue-500/50 ring-offset-0;
+}
+
+/* ===== LOADING ANIMATION ===== */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+/* ===== SHIMMER EFFECT ===== */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 1000px 100%;
+}
+
+/* ===== TEXT GRADIENTS ===== */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400;
+}
+
+/* ===== RESPONSIVE IMPROVEMENTS ===== */
+@media (max-width: 768px) {
+  .animate-blob {
+    animation: blob 5s infinite;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+}
+
