@@ -5,7 +5,7 @@ cmds = ["npm ci"]
 cmds = ["npm run build"]
 
 [start]
-cmd = "npm install -g serve && serve -s dist -l 8080"
+cmd = "npm start"
 
 [env]
 NODE_ENV = "production"
