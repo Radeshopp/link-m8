@@ -14,8 +14,16 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Remove node_modules to keep image size down (optional but helps with Coolify)
+# They will be reinstalled from node_modules cache in multi-stage if needed
+
 # Expose port
 EXPOSE 8080
 
-# Start the application with serve listening on all interfaces
+# Set environment
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=8080
+
+# Start the application
 CMD ["npm", "start"]
