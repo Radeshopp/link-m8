@@ -1,0 +1,10 @@
+[providers]
+runImage = "node:20-alpine"
+
+[buildConfig]
+installCmd = "npm ci"
+buildCmd = "npm run build"
+startCmd = "npm install -g serve && serve -s dist -l 8080"
+
+[variables]
+NODE_ENV = "production"
