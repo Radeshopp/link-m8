@@ -5,8 +5,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies including devDependencies for build time
+RUN npm ci --include=dev
 
 # Copy source code
 COPY . .
@@ -14,8 +14,11 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove node_modules to keep image size down (optional but helps with Coolify)
-# They will be reinstalled from node_modules cache in multi-stage if needed
+# Remove node_modules to keep image size down
+RUN rm -rf node_modules
+
+# Install only production dependencies
+RUN npm ci --omit=dev
 
 # Expose port
 EXPOSE 8080

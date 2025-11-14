@@ -1,13 +1,15 @@
 [install]
-cmds = ["npm ci"]
+cmds = ["npm ci --include=dev"]
 
 [build]
-cmds = ["npm run build"]
+cmds = ["npm run build", "npm ci --omit=dev"]
 
 [start]
 cmd = "npm start"
 
 [env]
-NODE_ENV = "production"
 HOST = "0.0.0.0"
 PORT = "8080"
+
+[phases.setup]
+dependsOn = ["setup"]
