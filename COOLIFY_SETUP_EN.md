@@ -5,6 +5,60 @@
 - Connected GitHub repository (Radeshopp/link-m8)
 - Domain or direct IP access
 
+## Environment Variables Setup Guide
+
+### What are Environment Variables?
+Environment variables are key-value pairs that configure your application without modifying code. They're essential for production deployments.
+
+### Required Variables for link-m8
+
+| Variable | Value | Purpose |
+|----------|-------|---------|
+| `NODE_ENV` | `production` | Tells Node.js to run in production mode (optimized performance) |
+| `HOST` | `0.0.0.0` | Makes server accessible from all network interfaces (required for Coolify) |
+| `PORT` | `8080` | Port where the application will listen |
+
+### How to Add Environment Variables in Coolify
+
+**Method 1: Through Coolify Dashboard**
+1. Go to your Application Settings
+2. Find the "Environment" or "Environment Variables" section
+3. Click "Add Variable" button
+4. Enter the variables:
+   ```
+   Key: NODE_ENV
+   Value: production
+   ```
+5. Click "Add" and repeat for each variable
+6. Save all changes
+7. Redeploy your application
+
+**Method 2: Using Coolify UI (Typical Flow)**
+```
+Dashboard → Your Application → Settings → Environment Variables → Add Variable
+Key: NODE_ENV | Value: production
+Key: HOST | Value: 0.0.0.0
+Key: PORT | Value: 8080
+→ Save → Redeploy
+```
+
+### ⚠️ Important Notes About Environment Variables
+
+- **Do NOT include quotes**: `NODE_ENV=production` (NOT `NODE_ENV="production"`)
+- **Spaces matter**: `HOST=0.0.0.0` (no spaces around `=`)
+- **Case sensitive**: `NODE_ENV` is different from `node_env`
+- **Changes require redeploy**: After adding/changing variables, redeploy the application
+- **Secrets**: Never commit sensitive data to GitHub; use Coolify variables instead
+
+### Optional Environment Variables
+
+If needed, you can also add:
+```
+DEBUG=false           # Disable debug mode
+LOG_LEVEL=info       # Set logging level
+CACHE_ENABLED=true   # Enable caching
+```
+
 ## Installation Steps on Coolify
 
 ### 1️⃣ Create New Application
@@ -26,12 +80,23 @@ Node Version:         20 (Alpine recommended)
 ```
 
 ### 3️⃣ Environment Variables
-Add the following variables:
+Add the following variables in Coolify's Environment Variables section:
 ```
 NODE_ENV=production
 HOST=0.0.0.0
 PORT=8080
 ```
+
+**Step-by-step to add Environment Variables in Coolify:**
+
+1. In your application settings, find "Environment Variables" or "Env Variables"
+2. Click "Add Environment Variable" or similar button
+3. Add each variable one by one:
+   - **Key:** `NODE_ENV` | **Value:** `production`
+   - **Key:** `HOST` | **Value:** `0.0.0.0`
+   - **Key:** `PORT` | **Value:** `8080`
+4. Save the changes
+5. These will be automatically loaded during build and deployment
 
 ### 4️⃣ Server Configuration
 ✅ **Important**: Make sure:
@@ -90,6 +155,18 @@ Contains:
 ### ❌ Port Already in Use
 **Cause**: Port 8080 is in use
 **Solution**: Change PORT in Environment Variables (Coolify usually provides 8080)
+
+### ❌ Connection Refused / Port Not Accessible
+**Cause**: HOST set to localhost (127.0.0.1) instead of 0.0.0.0
+**Solution**: Ensure `HOST=0.0.0.0` in Environment Variables, then redeploy
+
+### ❌ Application Starts But Not Accessible
+**Cause**: Environment variables not properly set or not redeployed after changes
+**Solution**: 
+1. Verify all three variables (NODE_ENV, HOST, PORT) are set correctly
+2. Redeploy the application after changing environment variables
+3. Wait 30-60 seconds for the deployment to complete
+4. Check application logs for error messages
 
 ## Local Testing (Before Pushing)
 
