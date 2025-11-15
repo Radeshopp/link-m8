@@ -47,6 +47,11 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
           enableWorker: true,
           lowLatencyMode: true,
           backBufferLength: 90,
+          xhrSetup: function(xhr: any, url: string) {
+            xhr.open('GET', url, true);
+            xhr.withCredentials = false;
+            xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+          }
         });
 
         hls.loadSource(url);
@@ -61,8 +66,13 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
 
         hls.on(Hls.Events.ERROR, (event, data) => {
           if (data.fatal) {
-            handleError(`Stream error: ${data.details}`);
+            console.error('HLS Fatal Error:', data.details);
             hls.destroy();
+            // Try native playback as fallback
+            video.current.src = url;
+            video.current.play().catch(err => {
+              handleError(`Stream error: ${data.details}. Tried fallback playback.`);
+            });
           }
         });
 
@@ -92,6 +102,10 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
           enableWorker: true,
           lowLatencyMode: true,
           backBufferLength: 90,
+          xhrSetup: function(xhr: any, url: string) {
+            xhr.open('GET', url, true);
+            xhr.withCredentials = false;
+          }
         });
 
         hls.loadSource(url);
@@ -106,7 +120,9 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(({ url
         hls.on(Hls.Events.ERROR, (event, data) => {
           if (data.fatal) {
             // Try native playback as fallback
+            console.warn('HLS Error - attempting native playback');
             video.current.src = url;
+            video.current.load();
           }
         });
 

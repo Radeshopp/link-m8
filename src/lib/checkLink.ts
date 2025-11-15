@@ -32,11 +32,14 @@ export const checkM3U8Link = async (url: string): Promise<CheckResult> => {
   }
   
   try {
+    // Try GET request first (more compatible)
     const response = await fetch(url, {
-      method: 'HEAD',
+      method: 'GET',
       headers: {
-        'Accept': 'application/x-mpegURL'
-      }
+        'Accept': 'application/x-mpegURL',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      mode: 'cors'
     });
 
     const headers: Record<string, string> = {};
@@ -52,14 +55,39 @@ export const checkM3U8Link = async (url: string): Promise<CheckResult> => {
       isWorking: response.status >= 200 && response.status < 300
     };
   } catch (error) {
-    return {
-      url,
-      status: 0,
-      headers: {},
-      responseTime: Math.round(performance.now() - startTime),
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
-      isWorking: false
-    };
+    // If GET fails, try HEAD request
+    try {
+      const headResponse = await fetch(url, {
+        method: 'HEAD',
+        headers: {
+          'Accept': 'application/x-mpegURL',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        },
+        mode: 'cors'
+      });
+
+      const headers: Record<string, string> = {};
+      headResponse.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+
+      return {
+        url,
+        status: headResponse.status,
+        headers,
+        responseTime: Math.round(performance.now() - startTime),
+        isWorking: headResponse.status >= 200 && headResponse.status < 300
+      };
+    } catch (headError) {
+      return {
+        url,
+        status: 0,
+        headers: {},
+        responseTime: Math.round(performance.now() - startTime),
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        isWorking: false
+      };
+    }
   }
 };
 
