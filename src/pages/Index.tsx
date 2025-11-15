@@ -1,7 +1,13 @@
+import { useState } from "react";
 import { LinkChecker } from "@/components/LinkChecker";
-import { CheckCircle2, Zap, Shield, Radio, Play, BarChart3 } from "lucide-react";
+import { DonateDialog } from "@/components/DonateDialog";
+import { Footer } from "@/components/Footer";
+import { AnimatedLogo } from "@/components/AnimatedLogo";
+import { CheckCircle2, Zap, Shield, Radio, Play, BarChart3, Heart } from "lucide-react";
 
 const Index = () => {
+  const [donateDialogOpen, setDonateDialogOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 overflow-x-hidden">
       {/* Enhanced Animated Background Elements */}
@@ -19,8 +25,22 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
       </div>
 
-      <div className="relative z-10 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="relative z-10 min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex flex-col">
+        <div className="max-w-7xl mx-auto w-full flex-1">
+          {/* Header with Logo and Donate Button */}
+          <div className="flex justify-between items-center mb-12">
+            <AnimatedLogo />
+            <button
+              onClick={() => setDonateDialogOpen(true)}
+              className="group relative inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-500/50 backdrop-blur-md hover:border-red-400/70 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/20"
+            >
+              <Heart size={18} className="text-red-400 group-hover:fill-red-400 transition-colors" />
+              <span className="text-sm font-semibold text-transparent bg-gradient-to-r from-red-300 to-pink-300 bg-clip-text">
+                Support Us
+              </span>
+            </button>
+          </div>
+
           {/* Header Section */}
           <div className="text-center mb-20 animate-fade-in">
             {/* Badge */}
@@ -100,6 +120,15 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Main Footer */}
+      <Footer />
+
+      {/* Donate Dialog */}
+      <DonateDialog
+        open={donateDialogOpen}
+        onOpenChange={setDonateDialogOpen}
+      />
     </div>
   );
 };
