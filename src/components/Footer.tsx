@@ -15,7 +15,7 @@ export const Footer = () => {
       <div className="relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           {/* Main Footer Content */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {/* Brand Section */}
             <div className="col-span-1">
               <div className="flex items-center gap-3 mb-4">
@@ -81,31 +81,6 @@ export const Footer = () => {
                   >
                     API Reference
                   </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Resources Links */}
-            <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
-                Resources
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="text-slate-400 hover:text-cyan-400 transition-colors text-sm"
-                  >
-                    Status
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-slate-400 hover:text-cyan-400 transition-colors text-sm"
-                  >
-                    Updates
-                  </a>
                 </li>
               </ul>
             </div>
